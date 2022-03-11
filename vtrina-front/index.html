@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>ViaCEP Webservice</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="./bootstrap.min.css">
+    <link rel="stylesheet" href="./style.css">
+
+
+    <!-- Adicionando JQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <!-- Adicionando Javascript -->
+    <script>
+
+        $(document).ready(function () {
+
+            function limpaFormulario() {
+                // Limpa valores do formulário de cep.
+                $("#rua").val("");
+                $("#bairro").val("");
+                $("#cidade").val("");
+                $("#uf").val("");
+                $("#ibge").val("");
+                $("#ddd").val("");
+            }
+
+            //Quando o campo cep perde o foco.
+            $("#cep").change(function () {
+
+                var cep = $(this).val().replace(/[^\d]/g, '');
+
+                if (cep.length > 8) {
+                    alert("Preencha com informações válidas");
+                    return false;
+                } 
+
+
+                if (cep != "") {
+                    var validacep = /^[0-9]{8}$/;
+
+                    if (validacep.test(cep)) {
+                        $("#rua").val("...");
+                        $("#bairro").val("...");
+                        $("#cidade").val("...");
+                        $("#uf").val("...");
+                        $("#ibge").val("...");
+                        $("#ddd").val("...");
+
+
+                        $.get("http://localhost:3003/" + cep, function (dados) {
+
+                            if (!("erro" in dados)) {
+                                $("#rua").val(dados.data.logradouro);
+                                $("#bairro").val(dados.data.bairro);
+                                $("#cidade").val(dados.data.localidade);
+                                $("#uf").val(dados.data.uf);
+                                $("#ibge").val(dados.data.ibge);
+                                $("#ddd").val(dados.data.ddd);
+                            } //end if.
+                            else {
+                                limpaFormulario();
+                                alert("CEP não encontrado.");
+                            }
+                        });
+                    } //end if.
+                    else {
+                        limpaFormulario();
+                        alert("Formato de CEP inválido.");
+                    }
+                } //end if.
+                else {
+                    limpaFormulario();
+                    alert("Preencha as informações.");
+                }
+            });
+        });
+
+        $(document).on({
+            ajaxStart: function () {
+                $("body").addClass("loading");
+            },
+            ajaxStop: function () {
+                $("body").removeClass("loading");
+            }
+        });
+
+
+    </script>
+</head>
+
+<body>
+    <main>
+        <div class="container">
+            <div class="row justify-content-md-center">
+                <div class="align-middle">
+
+                    <p class="h1">Forneça o cep sem hifen e descubra o endereço</p>
+
+                    <form method="get" action=".">
+                        <div class="form-group row">
+                            <label for="formGroupExampleInput">Cep
+                                <input type="number" class="form-control" id="cep"
+                                    maxlength="8" placeholder="Digite o seu Cep aqui">
+                                <button type="button" class="btn btn-dark">Pesquisar</button>
+                            </label>
+
+                            <label for="formGroupExampleInput">Rua
+                                <input type="text" class="form-control" id="rua" size="40">
+                            </label>
+
+                            <label for="formGroupExampleInput">Bairro:
+                                <input name="bairro" type="text" id="bairro" size="40" class="form-control"
+                                    id="formGroupExampleInput" />
+                            </label><br />
+
+                            <label for="formGroupExampleInput">Cidade:
+                                <input name="cidade" type="text" id="cidade" size="40" class="form-control"
+                                    id="formGroupExampleInput" />
+                            </label><br />
+
+                            <label for="formGroupExampleInput">Estado:
+                                <input name="uf" type="text" id="uf" size="2" class="form-control"
+                                    id="formGroupExampleInput" />
+                            </label><br />
+
+                            <label for="formGroupExampleInput">IBGE:
+                                <input name="ibge" type="text" id="ibge" size="8" class="form-control"
+                                    id="formGroupExampleInput" />
+                            </label><br />
+
+                            <label for="formGroupExampleInput">DDD:
+                                <input name="ddd" type="number" id="ddd" size="8" class="form-control"
+                                    id="formGroupExampleInput" />
+                            </label><br />
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="overlay"></div>
+        </div>
+        </div>
+    </main>
+</body>
+
+</html>
