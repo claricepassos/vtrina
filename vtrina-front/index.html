@@ -31,7 +31,7 @@
             //Quando o campo cep perde o foco.
             $("#cep").change(function () {
 
-                var cep = $(this).val().replace(/[^\d]/g, '');
+                var cep = $(this).val()
 
                 if (cep.length > 8) {
                     alert("Preencha com informações válidas");
@@ -74,7 +74,7 @@
                 } //end if.
                 else {
                     limpaFormulario();
-                    alert("Preencha as informações.");
+                    alert("Preencha as informações corretamente");
                 }
             });
         });
